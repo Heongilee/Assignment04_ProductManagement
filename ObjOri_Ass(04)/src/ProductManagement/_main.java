@@ -132,9 +132,51 @@ public class _main {
 		}
 		private void Insertion() {
 			//등록 관련 메소드
+			if(p4_cbx.getSelectedIndex() == 0) {/* 전체항목을 가리킨 상태에서 등록 버튼을 누른 튜플의 INSERT를 진행하려는 경우 */
+				//삽입의 경우 관리번호 갱신이 필요
+				Product p = new Product();
+				p.setName(p4_tf[0].getText());
+				p.setPrice(Integer.parseInt(p4_tf[1].getText()));
+				p.setManufacture(p4_tf[2].getText());
+				Boolean result = pd.newProduct(p);
+				if(result) {
+					Notice.setText("## 메시지 : "+ p.getName() +" 을 정상적으로 DB에 저장하였습니다.");
+				}
+				else{
+					Notice.setText("## ERROR : "+ p.getName() +" 을 저장하는데 실패했습니다.");
+				}
+			}
+			else {/* 특정 관리 번호를 선택한 뒤 등록을 누른 튜플의 업데이트를 진행하려는 경우 */
+				//업데이트의 경우 관리번호 갱신이 필요 없음.
+				Product p = new Product();
+				p.setId(p4_cbx.getSelectedIndex());
+				p.setName(p4_tf[0].getText());
+				p.setPrice(Integer.parseInt(p4_tf[1].getText()));
+				p.setManufacture(p4_tf[2].getText());
+				Boolean result = pd.updateProduct(p);
+				if(result) {
+					Notice.setText("## 메시지 : "+ p.getName() +" 을 정상적으로 수정했습니다.");
+				}
+				else {
+					Notice.setText("## 메시지 : "+ p.getName() +" 을 수정하는데 실패했습니다.");
+				}
+			}
 		}
 		private void Deletion() {
+			int id = p4_cbx.getSelectedIndex();
 			//삭제 관련 메소드
+			Boolean result = pd.delProduct(id);
+			if(result) {
+				Notice.setText("## 메시지 : 관리항목"+ id +"번을 정상적으로 DB에서 삭제했습니다.");
+			}
+			else{
+				Notice.setText("## ERROR : 관리항목"+ id +"번을 삭제하는데 실패했습니다.");
+			}
+			Vector<String> v = pd.getItems();
+			p4_cbx.removeAllItems();
+			p4_cbx.addItem("전체");
+			for(int i=0;i<v.size();i++)
+				p4_cbx.addItem(v.get(i));
 		}
 		private class AL implements ActionListener{
 			@Override
@@ -283,20 +325,21 @@ public class _main {
 			}
 			//파라미터의 product클래스의 내용을 DB에 저장.
 			boolean newProduct(Product p) {
-				//DB불러오기???
 				int result = 0;
 				sql = "INSERT INTO 04_productmanage.products(PRODUCTS.NAME, PRODUCTS.PRICE, PRODUCTS.MANUF) VALUES(?, ?, ?)";
+				String sql1 = "SET @CNT = 0";
+				String sql2 = "UPDATE PRODUCTS SET PRODUCTS.ID = @CNT:=@CNT+1";
 				try {
 					pstmt = conn.prepareStatement(sql);
 					pstmt.setString(1, p.getName());
 					pstmt.setInt(2, p.getPrice());
 					pstmt.setString(3, p.getManufacture());
 					result = pstmt.executeUpdate();	//Update된 레코드 수를 반환.
-					if(result <= 0)
-						Notice.setText("## ERROR : "+ p.getName() +"을 저장하는데 실패했습니다.");
-					else
-						Notice.setText("## 메시지 : "+ p.getName() +"을 저장하는데 성공했습니다.");
 					
+					conn.createStatement().executeQuery(sql1);
+					conn.createStatement().executeUpdate(sql2);
+					
+					pstmt.close();
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
@@ -306,14 +349,16 @@ public class _main {
 			boolean delProduct(int id){
 				int result = 0;
 				sql = "DELETE FROM PRODUCTS WHERE ID = ?";
+				String sql1 = "SET @CNT = 0";
+				String sql2 = "UPDATE PRODUCTS SET PRODUCTS.ID = @CNT:=@CNT+1";
 				try {
 					pstmt = conn.prepareStatement(sql);
 					pstmt.setInt(1, id);
 					result = pstmt.executeUpdate();
-					if(result <= 0)
-						Notice.setText("## ERROR : 관리번호"+ id +"을 저장하는데 실패했습니다.");
-					else
-						Notice.setText("## 메시지 : 관리번호"+ id +"을 저장하는데 성공했습니다.");
+					
+					conn.createStatement().executeQuery(sql1);
+					conn.createStatement().executeUpdate(sql2);
+					pstmt.close();
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
@@ -322,7 +367,7 @@ public class _main {
 			//파라미터의 Product 객체의 내용으로 업데이트.
 			boolean updateProduct(Product p){
 				int result = 0;
-				sql = "UPDATE PRODUCTS SET NAME = '?', PRICE = ?, MANUF = '?' WHERE ID = ?";
+				sql = "UPDATE PRODUCTS SET NAME = ?, PRICE = ?, MANUF = ? WHERE ID = ?";
 				try {
 					pstmt = conn.prepareStatement(sql);
 					pstmt.setString(1, p.getName());
@@ -330,10 +375,8 @@ public class _main {
 					pstmt.setString(3, p.getManufacture());
 					pstmt.setInt(4, p.getId());
 					result = pstmt.executeUpdate();
-					if(result<= 0)
-						Notice.setText("## ERROR : "+ p.getName() +"을 저장하는데 실패했습니다.");
-					else
-						Notice.setText("## 메시지 : "+ p.getName() +"을 저장하는데 성공했습니다.");
+					
+					pstmt.close();
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}

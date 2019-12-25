@@ -27,12 +27,18 @@ SET SQL_SAFE_UPDATES = 0;
 /*	테이블의 모든 데이터 삭제	*/
 DELETE FROM PRODUCTS;
 
+SELECT * FROM PRODUCTS WHERE ID = 1;
 /*	튜플 삽입	*/
 INSERT INTO 04_productmanage.products(PRODUCTS.NAME, PRODUCTS.PRICE, PRODUCTS.MANUF) VALUES('라면', 1500, '삼양');
 INSERT INTO 04_productmanage.products(PRODUCTS.NAME, PRODUCTS.PRICE, PRODUCTS.MANUF) VALUES('사이다', 1000, '스프라이트');
 
 /*	ID검색해서 해당 튜플 삭제	*/
 DELETE FROM PRODUCTS WHERE ID = 1;
+
+/*	삽입/삭제 후 id값 재정렬	*/
+SET @CNT = 0;
+UPDATE PRODUCTS SET PRODUCTS.ID = @CNT:=@CNT+1;
+
 
 /*	UPDATE문	*/
 UPDATE PRODUCTS SET NAME = '불닭볶음면', PRICE = 5000, MANUF = '농심' WHERE ID = 3;

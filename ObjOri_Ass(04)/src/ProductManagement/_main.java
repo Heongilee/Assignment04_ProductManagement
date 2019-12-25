@@ -4,7 +4,7 @@ import javax.swing.JFrame;
 
 class MyFrame extends JFrame{
 	 public MyFrame() {
-		 super("04조_상품 관리 프로그램");
+		 super("04조_Product Management Program");
 		 setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		 
 		 setSize(800, 300);

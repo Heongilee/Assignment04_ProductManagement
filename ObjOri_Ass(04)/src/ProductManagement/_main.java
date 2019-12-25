@@ -1,26 +1,9 @@
 package ProductManagement;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.Vector;
-
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-
-import com.sun.jdi.connect.spi.Connection;
+import java.awt.*;
+import java.sql.*;
+import java.util.*;
+import javax.swing.*;
 
 class AppMain extends JFrame{
 	private static boolean Toggle_Frame_Color = false;
@@ -145,27 +128,85 @@ public class _main {
 	}
 	//
 	public class ProductDAO{
+		String jdbcDriver = "com.mysql.cj.jdbc.Driver";
+		String jdbcURL = "jdbc:mysql://localhost/04_productmanage?serverTimezone=UTC";
+		Connection conn;
+		
+		PreparedStatement pstmt;
+		ResultSet rs;
+		
+		//콤보박스 아이템 관리번호를 위한 벡터
+		Vector<String> items = null;
+		String sql;
 		//DB연결 메소드.
 		public void connectDB() {
-			String jdbcDriver = "com.mysql.cj.jdbc.Driver";
-			String jdbcURL = "jdbc:mysql://localhost/04_productmanage";
-			Connection conn;
-			
-			PreparedStatement pstmt;
-			ResultSet rs;
-			
-			//콤보박스 아이템 관리번호를 위한 벡터
-			Vector<String> items = null;
-			String sql;
+			try {
+				Class.forName(jdbcDriver);
+				conn = DriverManager.getConnection(jdbcURL, "root", "zzll230");
+				
+				System.out.println("DB연결 성공!! ");
+			}catch(ClassNotFoundException e) {
+				//JDBC 드라이버 로드 에러
+				System.out.println("JDBC 드라이버 로드 에러.");
+			}catch(SQLException e) {
+				//DB 연결 에러
+				System.out.println("DB 연결  실패.");
+				e.printStackTrace();
+			}
 		}
 		//DB연결 종료 메소드.
-		public void closeDB() {}
+		public void closeDB() throws SQLException {
+			conn.close();
+		}
 		// 전체 Product클래스로 구성된 ArrayList를 리턴.
-		public ArrayList<Product> getAll(){return null;}
+		public ArrayList<Product> getAll() throws SQLException{
+			connectDB();
+			sql = "SELECT * FROM PRODUCTS";
+			
+			ArrayList<Product> Datas = new ArrayList<Product>();
+			
+			items = new Vector<String>();
+			items.add("전체");
+			
+			while(rs.next()) {
+				Product p = new Product();
+				p.setId(rs.getInt("ID"));
+				p.setName(rs.getString("NAME"));
+				p.setPrice(rs.getInt("PRICE"));
+				p.setManufacture(rs.getString("MANUF"));
+				Datas.add(p);	//레코드 ArrayList에 저장.
+				items.add(String.valueOf(rs.getInt("ID")));	//관리 번호 Vector에 저장.
+			}
+			
+			return Datas;
+		}
 		//관리번호(id)에 해당하는 Product클래스를 리턴.
-		Product getProduct(int id) {return null;}
+		Product getProduct(int id) {
+			//Q. 연결을 메소드 불러올 때 마다 해줘야 할까???
+			sql = "SELECT * FROM PRODUCT WHERE ID = ?";
+			Product p = null;
+			try {
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setInt(1, id);
+				rs = pstmt.executeQuery();
+				rs.next();
+				p = new Product();
+				p.setId(rs.getInt("ID"));
+				p.setName(rs.getString("NAME"));
+				p.setPrice(rs.getInt("PRICE"));
+				p.setManufacture(rs.getString("MANUF"));
+				
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			
+			return p;
+		}
 		//파라미터의 product클래스의 내용을 DB에 저장.
-		boolean newProduct(Product product) {return ;}
+		boolean newProduct(Product product) {
+			//DB불러오기
+			sql = "INSERT INTO PRODUCTS(";
+		}
 		//파라미터의 관리번호(id)에 해당하는 상품을 삭제.
 		boolean delProduct(int id){return ;}
 		//파라미터의 Product 객체의 내용으로 업데이트.

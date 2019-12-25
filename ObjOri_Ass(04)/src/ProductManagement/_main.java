@@ -6,6 +6,10 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -15,6 +19,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+
+import com.sun.jdi.connect.spi.Connection;
 
 class AppMain extends JFrame{
 	private static boolean Toggle_Frame_Color = false;
@@ -102,14 +108,69 @@ class AppMain extends JFrame{
 		}
 	}
 }
-class Product {
-	
-}
-class ProductDAO{
-	
-}
 public class _main {
 	public static void main(String[] args) {
 		new AppMain();
+	}
+	// 상품 정보를 표현하는 클래스로, PRODUCTS테이블과 구조가 동일하다.
+	public class Product {
+		private int id;
+		private String name;
+		private int price;
+		private String manufacture;
+		public int getId() {
+			return id;
+		}
+		public void setId(int id){
+			this.id = id;
+		}
+		public String getName() {
+			return name;
+		}
+		public void setName(String name){
+			this.name = name;
+		}
+		public int getPrice() {
+			return price;
+		}
+		public void setPrice(int price){
+			this.price = price;
+		}
+		public String getManufacture() {
+			return manufacture;
+		}
+		public void setManufacture(String manufacture){
+			this.manufacture = manufacture;
+		}
+	}
+	//
+	public class ProductDAO{
+		//DB연결 메소드.
+		public void connectDB() {
+			String jdbcDriver = "com.mysql.cj.jdbc.Driver";
+			String jdbcURL = "jdbc:mysql://localhost/04_productmanage";
+			Connection conn;
+			
+			PreparedStatement pstmt;
+			ResultSet rs;
+			
+			//콤보박스 아이템 관리번호를 위한 벡터
+			Vector<String> items = null;
+			String sql;
+		}
+		//DB연결 종료 메소드.
+		public void closeDB() {}
+		// 전체 Product클래스로 구성된 ArrayList를 리턴.
+		public ArrayList<Product> getAll(){return null;}
+		//관리번호(id)에 해당하는 Product클래스를 리턴.
+		Product getProduct(int id) {return null;}
+		//파라미터의 product클래스의 내용을 DB에 저장.
+		boolean newProduct(Product product) {return ;}
+		//파라미터의 관리번호(id)에 해당하는 상품을 삭제.
+		boolean delProduct(int id){return ;}
+		//파라미터의 Product 객체의 내용으로 업데이트.
+		boolean updateProduct(Product product) {return ;}
+		//콤보박스용 관리번호 목록을 리턴.
+		Vector<String> getItems(){return null;}
 	}
 }

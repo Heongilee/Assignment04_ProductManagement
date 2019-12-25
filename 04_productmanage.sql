@@ -30,3 +30,12 @@ DELETE FROM PRODUCTS;
 /*	튜플 삽입	*/
 INSERT INTO 04_productmanage.products(PRODUCTS.NAME, PRODUCTS.PRICE, PRODUCTS.MANUF) VALUES('라면', 1500, '삼양');
 INSERT INTO 04_productmanage.products(PRODUCTS.NAME, PRODUCTS.PRICE, PRODUCTS.MANUF) VALUES('사이다', 1000, '스프라이트');
+
+/*	ID검색해서 해당 튜플 삭제	*/
+DELETE FROM PRODUCTS WHERE ID = 1;
+
+/*	UPDATE문	*/
+UPDATE PRODUCTS SET NAME = '불닭볶음면', PRICE = 5000, MANUF = '농심' WHERE ID = 3;
+
+/*	SELECT문	*/
+SELECT ID FROM products;

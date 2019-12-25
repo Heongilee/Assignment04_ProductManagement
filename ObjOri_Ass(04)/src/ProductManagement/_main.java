@@ -106,6 +106,16 @@ public class _main {
 		///////////////////////////////////////
 		// 리스너 구현 부분
 		///////////////////////////////////////
+		private void refreshData() {
+			////////////////////////
+			// 메소드에서 화면 데이터 로딩 및 재로딩 처리
+			////////////////////////
+		}
+		private void clearField() {
+			////////////////////////
+			// 메소드에서 입력 양식 초기화
+			////////////////////////			
+		}
 		private void View() {
 			ArrayList<Product> Res = new ArrayList<Product>();
 			String str = "";
@@ -185,12 +195,44 @@ public class _main {
 				
 				if(btn.getText().equals("등록")) {
 					Insertion();
+					
+					ArrayList<Product> Res = new ArrayList<Product>();
+					String str = "";
+					Product l;
+					try {
+							Res = pd.getAll();
+							for(int i=0;i<Res.size();i++) {
+								l = Res.get(i);
+								str += l.toString()+"\n";
+							}
+							ta.setText(ta_col + "\n" + str);
+							
+							Notice.setText("## 메시지 : 전체 상품을 조회합니다.");
+					} catch (SQLException e1) {
+						e1.printStackTrace();
+					}
 				}
 				else if(btn.getText().equals("조회")) {
 					View();
 				}
 				else { //삭제
 					Deletion();
+					
+					ArrayList<Product> Res = new ArrayList<Product>();
+					String str = "";
+					Product l;
+					try {
+							Res = pd.getAll();
+							for(int i=0;i<Res.size();i++) {
+								l = Res.get(i);
+								str += l.toString()+"\n";
+							}
+							ta.setText(ta_col + "\n" + str);
+							
+							Notice.setText("## 메시지 : 전체 상품을 조회합니다.");
+					} catch (SQLException e1) {
+						e1.printStackTrace();
+					}
 				}
 			}
 		}
@@ -236,8 +278,8 @@ public class _main {
 		// 데이터 베이스 연동. 
 		///////////////////////////////////////
 		class ProductDAO{
-			String jdbcDriver = "com.mysql.cj.jdbc.Driver";
-			String jdbcURL = "jdbc:mysql://localhost/04_productmanage?serverTimezone=UTC";
+			String jdbcDriver = "com.mysql.jdbc.Driver";
+			String jdbcURL = "jdbc:mysql://localhost:3306/04_productmanage?useSSL=false";
 			Connection conn;
 			
 			PreparedStatement pstmt;

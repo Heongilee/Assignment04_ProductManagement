@@ -9,6 +9,7 @@ ctrl + b : 쿼리문 정리해줌.(개행이나 인덴팅 등.)			*/
 DROP TABLE products;
 /*	테이블 모든 컬럼 조회	*/
 SELECT * FROM PRODUCTS;
+
 /*	테이블 생성	*/
 CREATE TABLE 04_productmanage.products (
   ID INT(11) NOT NULL AUTO_INCREMENT,
@@ -17,12 +18,15 @@ CREATE TABLE 04_productmanage.products (
   MANUF VARCHAR(20) NOT NULL,
   PRIMARY KEY (ID))
 ENGINE = InnoDB
-auto_increment = 1
+auto_increment = 0
 DEFAULT CHARACTER SET = UTF8MB4;
+
 /*	삽입 삭제 수정 세이프 모드 해제 (테이블 처음 생성하면 이거 해줘야함)	*/
 SET SQL_SAFE_UPDATES = 0;
 
 /*	테이블의 모든 데이터 삭제	*/
 DELETE FROM PRODUCTS;
+
 /*	튜플 삽입	*/
 INSERT INTO 04_productmanage.products(PRODUCTS.NAME, PRODUCTS.PRICE, PRODUCTS.MANUF) VALUES('라면', 1500, '삼양');
+INSERT INTO 04_productmanage.products(PRODUCTS.NAME, PRODUCTS.PRICE, PRODUCTS.MANUF) VALUES('사이다', 1000, '스프라이트');

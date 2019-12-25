@@ -1,17 +1,19 @@
 package ProductManagement;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.*;
 import java.util.*;
 import javax.swing.*;
-
+//스윙 프레임 클래스
 class AppMain extends JFrame{
 	private static boolean Toggle_Frame_Color = false;
 	private static int frame_Size_x = 750;
 	private static int frame_Size_y = 250;
 	private static Container c;
 	private MyPanel1 p1 = new MyPanel1();
-		private JLabel Notice = new JLabel("## 메시지 : ");
+		protected JLabel Notice = new JLabel("## 메시지 : ");
 	private MyPanel2 p2 = new MyPanel2();
 	private MyPanel3 p3 = new MyPanel3();
 		private JButton[] btn = new JButton[3];
@@ -59,6 +61,9 @@ class AppMain extends JFrame{
 		this.setResizable(false);
 		setVisible(true);
 	}
+	////////////////////////////
+	//JPanel을 상속받은 MyPanel 클래스들
+	////////////////////////////
 	private class MyPanel1 extends JPanel{
 		public MyPanel1() {
 			this.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -90,13 +95,19 @@ class AppMain extends JFrame{
 			if(Toggle_Frame_Color == true) this.setBackground(Color.magenta);
 		}
 	}
-}
-public class _main {
-	public static void main(String[] args) {
-		new AppMain();
+	///////////////////////////////////////
+	// 리스너 구현 부분
+	///////////////////////////////////////
+	private class AL implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent e) {
+		}
 	}
+	
+	///////////////////////////////////////
 	// 상품 정보를 표현하는 클래스로, PRODUCTS테이블과 구조가 동일하다.
-	public class Product {
+	///////////////////////////////////////
+	class Product {
 		private int id;
 		private String name;
 		private int price;
@@ -126,13 +137,17 @@ public class _main {
 			this.manufacture = manufacture;
 		}
 	}
-	//
-	public class ProductDAO{
+	
+	///////////////////////////////////////
+	// 데이터 베이스 연동. 
+	///////////////////////////////////////
+	class ProductDAO{
 		String jdbcDriver = "com.mysql.cj.jdbc.Driver";
 		String jdbcURL = "jdbc:mysql://localhost/04_productmanage?serverTimezone=UTC";
 		Connection conn;
 		
 		PreparedStatement pstmt;
+		Statement stmt;
 		ResultSet rs;
 		
 		//콤보박스 아이템 관리번호를 위한 벡터
@@ -196,6 +211,8 @@ public class _main {
 				p.setPrice(rs.getInt("PRICE"));
 				p.setManufacture(rs.getString("MANUF"));
 				
+				rs.close();
+				pstmt.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -203,15 +220,83 @@ public class _main {
 			return p;
 		}
 		//파라미터의 product클래스의 내용을 DB에 저장.
-		boolean newProduct(Product product) {
-			//DB불러오기
-			sql = "INSERT INTO PRODUCTS(";
+		boolean newProduct(Product p) {
+			//DB불러오기???
+			int result = 0;
+			sql = "INSERT INTO 04_productmanage.products(PRODUCTS.NAME, PRODUCTS.PRICE, PRODUCTS.MANUF) VALUES(?, ?, ?)";
+			try {
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setString(1, p.getName());
+				pstmt.setInt(2, p.getPrice());
+				pstmt.setString(3, p.getManufacture());
+				result = pstmt.executeUpdate();	//Update된 레코드 수를 반환.
+				if(result <= 0)
+					Notice.setText("## ERROR : "+ p.getName() +"을 저장하는데 실패했습니다.");
+				else
+					Notice.setText("## 메시지 : "+ p.getName() +"을 저장하는데 성공했습니다.");
+				
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			return (result <= 0)?false:true;
 		}
 		//파라미터의 관리번호(id)에 해당하는 상품을 삭제.
-		boolean delProduct(int id){return ;}
+		boolean delProduct(int id){
+			int result = 0;
+			sql = "DELETE FROM PRODUCTS WHERE ID = ?";
+			try {
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setInt(1, id);
+				result = pstmt.executeUpdate();
+				if(result <= 0)
+					Notice.setText("## ERROR : 관리번호"+ id +"을 저장하는데 실패했습니다.");
+				else
+					Notice.setText("## 메시지 : 관리번호"+ id +"을 저장하는데 성공했습니다.");
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			return (result <= 0)?false:true;
+		}
 		//파라미터의 Product 객체의 내용으로 업데이트.
-		boolean updateProduct(Product product) {return ;}
+		boolean updateProduct(Product p){
+			int result = 0;
+			sql = "UPDATE PRODUCTS SET NAME = '?', PRICE = ?, MANUF = '?' WHERE ID = ?";
+			try {
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setString(1, p.getName());
+				pstmt.setInt(2, p.getPrice());
+				pstmt.setString(3, p.getManufacture());
+				pstmt.setInt(4, p.getId());
+				result = pstmt.executeUpdate();
+				if(result<= 0)
+					Notice.setText("## ERROR : "+ p.getName() +"을 저장하는데 실패했습니다.");
+				else
+					Notice.setText("## 메시지 : "+ p.getName() +"을 저장하는데 성공했습니다.");
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			return (result<=0)?false:true;
+		}
 		//콤보박스용 관리번호 목록을 리턴.
-		Vector<String> getItems(){return null;}
+		Vector<Integer> getItems(){
+			Vector<Integer> v = new Vector<Integer>();
+			sql = "SELECT ID FROM products";
+			try {
+				stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery(sql);
+				while(rs.next()) {
+					v.add(rs.getInt("ID"));
+				}
+			} catch(SQLException e) {
+				e.printStackTrace();
+			}
+			
+			return v;
+		}
+	}
+}
+public class _main {
+	public static void main(String[] args) {
+		new AppMain();
 	}
 }

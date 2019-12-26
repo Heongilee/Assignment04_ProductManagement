@@ -202,16 +202,18 @@ public class _main {
 			
 			return p;
 		}
+		/*
 		//파라미터의 product클래스의 내용을 DB에 저장.
 		boolean newProduct(Product product) {
 			//DB불러오기
 			sql = "INSERT INTO PRODUCTS(";
 		}
 		//파라미터의 관리번호(id)에 해당하는 상품을 삭제.
-		boolean delProduct(int id){return ;}
+		boolean delProduct(int id){return true;}
 		//파라미터의 Product 객체의 내용으로 업데이트.
 		boolean updateProduct(Product product) {return ;}
 		//콤보박스용 관리번호 목록을 리턴.
 		Vector<String> getItems(){return null;}
+		*/
 	}
 }

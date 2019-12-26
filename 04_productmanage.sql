@@ -4,6 +4,7 @@ ctrl + shift + Enter : 세미콜론으로 분리된 블럭 친 다중 쿼리문 
 ctrl + t : 새로운 쿼리 에디터 열기
 ctrl + shift + o : 저장된 스크립트(*.sql)파일 열기
 ctrl + b : 쿼리문 정리해줌.(개행이나 인덴팅 등.)			*/
+SELECT * FROM PRODUCTS;
 
 /*	테이블 삭제	*/
 DROP TABLE products;
